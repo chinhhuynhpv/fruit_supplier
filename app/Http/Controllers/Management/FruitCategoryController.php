@@ -70,7 +70,7 @@ class FruitCategoryController
             if (empty($category)) {
                 return \Response::json(['success' => EError::SUCCESS, 'datas' => $url]);
             } else {
-                return \Response::json(['success' => EError::FAIL, 'datas' => 'Tên danh mục đã tồn tại!']);
+                return \Response::json(['success' => EError::FAIL, 'datas' => 'Category Name has existed already!']);
             }
         }
     }
@@ -84,6 +84,7 @@ class FruitCategoryController
 
     public function update (Request $request, $categoryId) {
         $inputs = $request->all();
+
         Validator::make($inputs, [
             'name' => ['required', 'string', 'max:255','unique:fruit_category']
         ])->validate();
@@ -94,13 +95,16 @@ class FruitCategoryController
                 'slug' => Str::slug($inputs['name'])
             ];
             $category = $this->fruitCategoryRepository->update($categoryId, $attributes);
+            
             if (!$category) {
                 return \Redirect::back()->withErrors(['error' => 'Update fruit category Fail!']);
             }
+
             $notification = array(
                 'message' => 'update fruit category success!',
                 'alert-type' => 'success'
             );
+
             return redirect()->route('categories.fengshui.index')->with($notification);
         } catch (\Exception $e) {
             logger($e->getMessage() . ' at ' . $e->getLine() .  ' in ' . $e->getFile());
@@ -115,7 +119,9 @@ class FruitCategoryController
     public function delete (Request $request) {
         
         try {
+
             $input = $request->all();
+
             if (!empty($input['id'])) {
                 $result = $this->fruitCategoryRepository->delete($input['id']);
                 if ($result) {
@@ -126,6 +132,7 @@ class FruitCategoryController
             }
         } catch (\Exception $e) {
             logger($e->getMessage() . ' at ' . $e->getLine() .  ' in ' . $e->getFile());
+            
             return \Response::json(['success' => EError::FAIL, 'message' => 'Error! Delete fail!']);
         }
     }

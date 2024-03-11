@@ -117,13 +117,16 @@ class FruitController extends Controller
                 'price' => $inputs['price'],
             ];
             $fruit = $this->fruitRepository->update($fruitId, $inputs);
+
             if (!$fruit) {
                 return \Redirect::back()->withErrors(['error' => 'Update fruit Fail!']);
             }
+            
             $notification = array(
                 'message' => 'update fruit success!',
                 'alert-type' => 'success'
             );
+
             return redirect()->route('fruitList')->with($notification);
         } catch (\Exception $e) {
             logger($e->getMessage() . ' at ' . $e->getLine() .  ' in ' . $e->getFile());
@@ -131,6 +134,7 @@ class FruitController extends Controller
                 'message' => 'Update fruit fail!',
                 'alert-type' => 'error'
             );
+
             return \redirect()->back()->with($notification);
         }
     }
@@ -138,9 +142,12 @@ class FruitController extends Controller
     public function delete (Request $request) {
         
         try {
+
             $input = $request->all();
+
             if (!empty($input['id'])) {
                 $result = $this->fruitRepository->delete($input['id']);
+                
                 if ($result) {
                     $notification = array(
                         'message' => 'Deleted fruit success!',
@@ -152,10 +159,12 @@ class FruitController extends Controller
                         'alert-type' => 'error'
                     );
                 }
+
                 return redirect()->route('fruitList')->with($notification);
             }
         } catch (\Exception $e) {
             logger($e->getMessage() . ' at ' . $e->getLine() .  ' in ' . $e->getFile());
+
             return \Response::json(['success' => EError::FAIL, 'message' => 'Error! Delete fail!']);
         }
     }

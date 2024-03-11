@@ -28,7 +28,6 @@ class InvoiceController extends Controller
     public function index()
     {
         $list = $this->invoiceRepository->getlistInvoices();
-    
         return view('staff.invoice.list', compact('list'));
     }
 
@@ -69,6 +68,7 @@ class InvoiceController extends Controller
                 'alert-type' => 'success'
             );
             DB::commit();
+
             return redirect()->route('invoiceList')->with($notification);
         } catch (\Exception $e) {
             logger($e->getMessage() . ' at ' . $e->getLine() .  ' in ' . $e->getFile());
@@ -77,6 +77,7 @@ class InvoiceController extends Controller
                 'alert-type' => 'error'
             );
             DB::rollBack();
+
             return \redirect()->back()->with($notification);
         }
 
@@ -96,25 +97,29 @@ class InvoiceController extends Controller
         $pdf->setOptions([
             'enable_font_subsetting'    => true
         ]);
+        
         return $pdf->download('invoice.pdf');
     }
 
     public function delete (Request $request) {
         
-        // try {
+        try {
+
             $input = $request->all();
+
             if (!empty($input['id'])) {
                 $result = $this->invoiceRepository->delete($input['id']);
+
                 if ($result) {
                     return \Response::json(['success' => EError::SUCCESS, 'message' => 'Deleted successfull']);
                 } else {
                     return \Response::json(['success' => EError::FAIL, 'message' => 'Error! Delete fail!']);
                 }
             }
-        // } catch (\Exception $e) {
-        //     logger($e->getMessage() . ' at ' . $e->getLine() .  ' in ' . $e->getFile());
-        //     return \Response::json(['success' => EError::FAIL, 'message' => 'Error! Delete fail!']);
-        // }
+        } catch (\Exception $e) {
+            logger($e->getMessage() . ' at ' . $e->getLine() .  ' in ' . $e->getFile());
+            return \Response::json(['success' => EError::FAIL, 'message' => 'Error! Delete fail!']);
+        }
     }
 
     public function detail ($invoiceId) {
@@ -125,7 +130,7 @@ class InvoiceController extends Controller
             
             // get list fruits by invoice
             $listFruitsByInvoice = $invoice->fruits;
-            
+
             return view('staff/invoice/detail', compact('invoice', 'listFruitsByInvoice'));
         } catch (\Exception $e) {
             logger($e->getMessage() . ' at ' . $e->getLine() .  ' in ' . $e->getFile());
@@ -133,72 +138,4 @@ class InvoiceController extends Controller
         }
     }
 
-    // public function edit ($invoiceId) {
-       
-    //     if (!empty($invoiceId)) {
-    //         $invoice = $this->invoiceRepository->getInvoiceDetail($invoiceId);
-            
-    //         // get list fruits by invoice
-    //         $listFruitsByInvoice = $invoice->fruits()->get();
-            
-    //         // get list fruits
-    //         $fruits = $this->fruitRepository->getlistFruits();
-            
-    //         return view('staff.invoice.edit', compact('invoice', 'listFruitsByInvoice', 'fruits'));
-    //     }
-    // }
-
-    // public function update (Request $request, $invoiceId) {
-        
-    //     $inputs = $request->all();
-        
-    //     Validator::make($inputs, [
-    //         'customer_name' => ['required', 'string'],
-    //         'phone' => ['required'],
-    //         'email' => ['required', 'email'],
-    //         'fruits' => ['required'],
-    //         'quantity' => ['required'],
-    //         'total_bill' => ['required'],
-    //     ])->validate();
-
-    //     $request['staff_id'] = Auth::guard('staff')->user()->id;
-
-    //     // try {
-    //         DB::beginTransaction();
-    //         $attributes = $this->invoiceRepository->getInputs($request);
-            
-    //         $invoice = $this->invoiceRepository->update($invoiceId, $attributes);
-    //         // remove all the product in invoice
-            
-    //         $fruitIds = $inputs['fruits'];
-    //         $quantities = $inputs['quantity'];
-    //         $newFruits = [];
-
-    //         // Loop through the arrays and combine them into the required format
-    //         for ($i = 0; $i < count($fruitIds); $i++) {
-    //             $newFruits[$fruitIds[$i]] = ['quantity' => $quantities[$i]];
-    //         }
-
-    //         // Update the relationship using sync method
-    //         $invoice->fruits()->sync($newFruits);
-            
-    //         $notification = array(
-    //             'message' => 'Save success.',
-    //             'alert-type' => 'success'
-    //         );
-    //         DB::commit();
-    //         return redirect()->route('invoiceList')->with($notification);
-    //     // } catch (\Exception $e) {
-    //     //     logger($e->getMessage() . ' at ' . $e->getLine() .  ' in ' . $e->getFile());
-    //     //     $notification = array(
-    //     //         'message' => 'Update fruit fail!',
-    //     //         'alert-type' => 'error'
-    //     //     );
-    //     //     return \redirect()->back()->with($notification);
-    //     // }
-    // }
-
-
-
-    
 }

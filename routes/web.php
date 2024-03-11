@@ -33,7 +33,6 @@ Route::domain(env('STAFF_SUB_DOMAIN') . '.' . env('APP_URL'))->group(function ()
 
     //Logout
     Route::post('/logout', [StaffAuthController::class, 'logout'])->name('staff.logout');
-
     
     //staff Management
     Route::group(['middleware' => ['auth:staff']], function () {
