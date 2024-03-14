@@ -21,7 +21,7 @@ class FruitCategory extends Model
 
     protected $fillable = ['name', 'slug'];
 
-    function news()
+    function fruits()
     {
         return $this->hasMany(Fruit::class,'fruit_category_id', 'id');
     }

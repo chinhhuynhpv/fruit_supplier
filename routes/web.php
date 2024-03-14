@@ -1,6 +1,5 @@
 <?php
 
-use App\Helper\RouteGenerator;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Staff\StaffAuthController;
 use App\Http\Controllers\Staff\StaffTopController;
