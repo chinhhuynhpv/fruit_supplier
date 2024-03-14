@@ -62,6 +62,9 @@ class InvoiceController extends Controller
             if($invoice->id) {
                 $invoiceFuitInsert = $this->invoiceRepository->addFruitIntoInvoice($invoice->id, $input['fruits'], $input['quantity']);
             }
+
+            // update quantity for fruits
+            $this->invoiceRepository->updateFruitQuantity($invoice->id);
             
             $notification = array(
                 'message' => 'Save success.',

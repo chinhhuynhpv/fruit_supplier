@@ -65,6 +65,15 @@ class InvoiceRepository extends BaseRepository
         return $result->with('staff')->with('fruits.fruit_category')->find($invoiceId);
     }
 
+    public function updateFruitQuantity($invoiceId){
+        $listFruit =  $this->getInvoiceDetail($invoiceId)->fruits;
+
+        foreach($listFruit as $fruit){
+            $fruit->decrement('quantity', $fruit->pivot->quantity);
+        }
+
+    }
+
     public function updateWithConditions($conditions, $data)
     {
         return $this->model->where($conditions)->update($data); 

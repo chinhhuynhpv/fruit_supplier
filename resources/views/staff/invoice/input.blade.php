@@ -22,7 +22,13 @@
             </div>
             <div class="form-group">
                 <label>{{__("Bonus")}}</label>
-                <input type="number" name="bonus" class="form-control" value="{{$invoice->bonus ?? ''}}">
+                <select name="bonus" >
+                    <option value="0">--choose Bonus--</option>
+                    <option value="1">1$</option>
+                    <option value="2">2$</option>
+                    <option value="3">3$</option>
+                    <option value="4">4$</option>
+                </select>
             </div>
 
             <div class="list-product-for-buy">

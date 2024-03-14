@@ -30,11 +30,18 @@ class FruitRepository extends BaseRepository
     public function getlistFruits() {
         $result = $this->model;
         
-        return $result->with('fruit_category')->whereHas('fruit_category')->orderBy('created_at','DESC')->paginate(10);
+        return $result->with('fruit_category')
+        ->where('quantity', '>', 0)
+        ->whereHas('fruit_category', function ($query) {
+            // Optionally, add additional constraints for the fruit_category relationship
+        })
+        ->orderBy('created_at', 'DESC')
+        ->paginate(10);
     }
 
     public function updateWithConditions($conditions, $data)
     {
         return $this->model->where($conditions)->update($data); 
     }
+
 }

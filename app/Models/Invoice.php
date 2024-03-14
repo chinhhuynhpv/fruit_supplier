@@ -24,4 +24,21 @@ class Invoice extends Model
     {
         return $this->belongsTo(Staff::class);
     }
+
+    // Listen for the created event
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::created(function ($invoice) {
+
+            $invoice->load('fruits');
+
+            // Update product quantities when an invoice is created
+           foreach ($invoice->fruits as $fruit) {
+            dd($fruit);
+                $fruit->decrement('quantity', $fruit->pivot->quantity);
+            }
+        });
+    }
 }
