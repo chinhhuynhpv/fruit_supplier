@@ -27,19 +27,24 @@ class InvoiceController extends Controller
 
     public function index()
     {
-        $list = $this->invoiceRepository->getlistInvoices();
-        return view('staff.invoice.list', compact('list'));
+        if($this->authorize('view', Invoice::class)){
+            $list = $this->invoiceRepository->getlistInvoicesByStaff(Auth::user()->id);
+            return view('staff.invoice.list', compact('list'));
+        }
     }
 
     public function create()
     {
-        $fruits = $this->fruitRepository->getlistFruits();
-        return view('staff.invoice.input', compact('fruits'));
+        // để cho phép truy cập vào trang thêm thì sẽ dùng gate, còn ở bước lưu thì sẽ dùng policy
+        if($this->authorize('create', Invoice::class)){
+            $fruits = $this->fruitRepository->getlistFruits();
+            return view('staff.invoice.input', compact('fruits'));
+        }
     }
 
     public function store(Request $request)
     {
-        
+
         $input = $request->all();
 
         Validator::make($input, [
@@ -105,20 +110,29 @@ class InvoiceController extends Controller
     }
 
     public function delete (Request $request) {
-        
+
         try {
-
             $input = $request->all();
+            $invoice = $this->invoiceRepository->getInvoiceDetail($input['id']);
 
-            if (!empty($input['id'])) {
+            if($this->authorize('delete', $invoice)) {
                 $result = $this->invoiceRepository->delete($input['id']);
 
                 if ($result) {
-                    return \Response::json(['success' => EError::SUCCESS, 'message' => 'Deleted successfull']);
-                } else {
-                    return \Response::json(['success' => EError::FAIL, 'message' => 'Error! Delete fail!']);
+                    $notification = array(
+                        'message' => 'Delete success.',
+                        'alert-type' => 'success'
+                    );
+                }else{
+                    $notification = array(
+                        'message' => 'Delete fail.',
+                        'alert-type' => 'error'
+                    );
                 }
+
+                return redirect()->route('invoiceList')->with($notification);
             }
+            
         } catch (\Exception $e) {
             logger($e->getMessage() . ' at ' . $e->getLine() .  ' in ' . $e->getFile());
             return \Response::json(['success' => EError::FAIL, 'message' => 'Error! Delete fail!']);
@@ -130,11 +144,12 @@ class InvoiceController extends Controller
         try {
             // get invoice
             $invoice = $this->invoiceRepository->getInvoiceDetail($invoiceId);
-            
-            // get list fruits by invoice
-            $listFruitsByInvoice = $invoice->fruits;
+            if($this->authorize('detail', $invoice)) {
+                // get list fruits by invoice
+                $listFruitsByInvoice = $invoice->fruits;
 
-            return view('staff/invoice/detail', compact('invoice', 'listFruitsByInvoice'));
+                return view('staff/invoice/detail', compact('invoice', 'listFruitsByInvoice'));
+            }
         } catch (\Exception $e) {
             logger($e->getMessage() . ' at ' . $e->getLine() .  ' in ' . $e->getFile());
             return \Response::json(['success' => EError::FAIL, 'message' => 'Error!  Something went wrong!']);

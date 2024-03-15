@@ -31,6 +31,7 @@ class FruitCategoryController
 
     public function store(Request $request)
     {
+        dd($request->user());
         $input = $request->all();
 
         Validator::make($input, [

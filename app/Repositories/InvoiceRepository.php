@@ -59,6 +59,12 @@ class InvoiceRepository extends BaseRepository
         return $result->with('staff')->with('fruits.fruit_category')->orderBy('created_at','DESC')->paginate(10);
     }
 
+    public function getlistInvoicesByStaff($staffId) {
+        $result = $this->model;
+        
+        return $result->with('staff')->with('fruits.fruit_category')->where('staff_id', $staffId)->orderBy('created_at','DESC')->paginate(10);
+    }
+
     public function getInvoiceDetail($invoiceId) {
         $result = $this->model;
         

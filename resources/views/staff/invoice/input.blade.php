@@ -85,6 +85,9 @@
     <script>
         $(document).ready(function() {
             let totalBill = 0
+            localStorage.clear();
+            updateChosenItems();
+            updateTotalBillUI();
 
             $('#btn-reset-choose-fruit').click(function(event) {
                 localStorage.clear();
@@ -106,9 +109,6 @@
                 var fruitPrice = parseFloat(selectedOption.data('price'));
                 var fruitName = selectedOption.data('name');
                 var fruitQuantity = parseFloat($('#choose_quantity').val());
-                
-                // totalBill += parseFloat(quantity)*parseFloat(price);
-                // $('input[name="total_bill"]').val(totalBill);
 
                 // Create object with the data
                 var fruitData = {
